@@ -10,10 +10,10 @@ package substreams_sink_kafka
 
 // 	"github.com/streamingfast/bstream"
 // 	sink "github.com/streamingfast/substreams-sink"
-// 	pbkafka "github.com/mavvverick/substreams-sink-kafka/pb/sf/substreams/sink/kafka/v1"
 
-// 	"cloud.google.com/go/pubsub"
-// 	"cloud.google.com/go/pubsub/pstest"
+// 	"github.com/twmb/franz-go/pkg/kgo"
+// 	// "cloud.google.com/go/kgo"
+// 	// "cloud.google.com/go/kgo/pstest"
 // 	"github.com/streamingfast/logging"
 // 	"github.com/streamingfast/shutter"
 // 	"github.com/stretchr/testify/require"
@@ -42,7 +42,7 @@ package substreams_sink_kafka
 // 		Sinker:     nil,
 // 		logger:     logger,
 // 		client:     nil,
-// 		topic:      nil,
+// 		topic:      "topic",
 // 		cursorPath: "/tmp/sink-sate",
 // 	}
 
@@ -67,12 +67,12 @@ package substreams_sink_kafka
 
 // 	cases := []struct {
 // 		name            string
-// 		messages        []*pubsub.Message
+// 		messages        []*kgo.Record
 // 		expectedResults []resultMessage
 // 	}{
 // 		{
 // 			name: "sunny path",
-// 			messages: []*pubsub.Message{
+// 			messages: []*kgo.Record{
 // 				{
 // 					Data: []byte("data.1"),
 // 				},
@@ -85,7 +85,7 @@ package substreams_sink_kafka
 // 		},
 // 		{
 // 			name: "multiple messages",
-// 			messages: []*pubsub.Message{
+// 			messages: []*kgo.Record{
 // 				{
 // 					Data:        []byte("data.1"),
 // 					OrderingKey: "1_1",
@@ -116,7 +116,7 @@ package substreams_sink_kafka
 // 		},
 // 		{
 // 			name: "multiple complex messages",
-// 			messages: []*pubsub.Message{
+// 			messages: []*kgo.Message{
 // 				{
 // 					Data:        []byte("data.1"),
 // 					OrderingKey: "1_1",
@@ -153,7 +153,7 @@ package substreams_sink_kafka
 // 		},
 // 		{
 // 			name: "undo message",
-// 			messages: []*pubsub.Message{
+// 			messages: []*kgo.Message{
 // 				{
 // 					Data:       nil,
 // 					Attributes: map[string]string{"LastValidBlock": "4", "Step": "Undo", "Cursor": "1"},
@@ -179,7 +179,7 @@ package substreams_sink_kafka
 // 			require.NoError(t, err)
 
 // 			defer conn.Close()
-// 			client, err := pubsub.NewClient(ctx, "project", option.WithGRPCConn(conn))
+// 			client, err := kgo.NewClient(ctx, "project", option.WithGRPCConn(conn))
 // 			defer client.Close()
 
 // 			topic, err := client.CreateTopic(ctx, "topic")
@@ -198,7 +198,7 @@ package substreams_sink_kafka
 // 				cursorPath: "",
 // 			}
 
-// 			subscription, err := client.CreateSubscription(ctx, "sub", pubsub.SubscriptionConfig{
+// 			subscription, err := client.CreateSubscription(ctx, "sub", kgo.SubscriptionConfig{
 // 				Topic:                 testSink.topic,
 // 				AckDeadline:           10 * time.Second,
 // 				EnableMessageOrdering: true,
@@ -213,7 +213,7 @@ package substreams_sink_kafka
 // 			done := make(chan interface{})
 
 // 			go func() {
-// 				err = subscription.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
+// 				err = subscription.Receive(ctx, func(ctx context.Context, m *kgo.Message) {
 // 					lock.Lock()
 // 					results = append(results, resultMessage{
 // 						data:        string(m.Data),
@@ -273,20 +273,20 @@ package substreams_sink_kafka
 // 	}
 
 // 	blockNumber := uint64(4)
-// 	publish := &pbpubsub.Publish{
-// 		Messages: []*pbpubsub.Message{
+// 	publish := &pbkgo.Publish{
+// 		Messages: []*pbkgo.Message{
 // 			{
 // 				Data:       []byte("data.1"),
-// 				Attributes: []*pbpubsub.Attribute{{Key: "key1", Value: "value1"}},
+// 				Attributes: []*pbkgo.Attribute{{Key: "key1", Value: "value1"}},
 // 			},
 // 			{
 // 				Data:       []byte("data.2"),
-// 				Attributes: []*pbpubsub.Attribute{{Key: "key2", Value: "value2"}},
+// 				Attributes: []*pbkgo.Attribute{{Key: "key2", Value: "value2"}},
 // 			},
 // 		},
 // 	}
 
-// 	expectedResults := []*pubsub.Message{
+// 	expectedResults := []*kgo.Message{
 // 		{
 // 			Data: []byte("data.1"),
 // 			Attributes: map[string]string{
@@ -323,7 +323,7 @@ package substreams_sink_kafka
 
 // 	LastValidBlockNumber := uint64(4)
 
-// 	expectedResults := []*pubsub.Message{
+// 	expectedResults := []*kgo.Message{
 // 		{
 // 			Data: nil,
 // 			Attributes: map[string]string{
