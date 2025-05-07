@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package sf.substreams.sink.kafka.v1;
+
+option go_package = "github.com/streamingfast/substreams-sink-kafka/pb/sf/substreams/sink/kafka/v1;pbkafka";
+
+
+message Publish{
+  repeated Message messages = 1;
+}
+
+
+message Message {
+  bytes data = 1;
+  repeated Attribute attributes = 2;
+}
+
+message Attribute {
+  string key = 1;
+  string value = 2;
+}

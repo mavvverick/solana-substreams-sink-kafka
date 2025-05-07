@@ -1,0 +1,23 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/streamingfast/substreams-sink-pubsub/pb
+plugins:
+  - name: go
+    out: ../pb
+    opt: paths=source_relative
+
+  - plugin: buf.build/community/neoeinstein-prost:v0.3.1
+    out: ../examples/simple/src/pb
+
+  - plugin: buf.build/community/neoeinstein-prost-crate:v0.3.1
+    out: ../examples/simple/src/pb
+    opt:
+      - no_features
+
+
+  
+        
+      
+    
