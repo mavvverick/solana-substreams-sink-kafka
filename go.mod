@@ -3,6 +3,10 @@ module github.com/mavvverick/substreams-sink-kafka
 go 1.24.2
 
 require (
+	github.com/spf13/cobra v1.9.1
+	github.com/spf13/pflag v1.0.6
+	github.com/streamingfast/cli v0.0.4-0.20241119021815-815afa473375
+	github.com/streamingfast/logging v0.0.0-20250404134358-92b15d2fbd2e
 	github.com/streamingfast/shutter v1.5.0
 	github.com/streamingfast/substreams v1.15.4
 	github.com/streamingfast/substreams-sink v0.5.2
@@ -89,19 +93,15 @@ require (
 	github.com/sethvargo/go-retry v0.2.3 // indirect
 	github.com/spf13/afero v1.10.0 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
-	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.15.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.5.0 // indirect
 	github.com/streamingfast/bstream v0.0.2-0.20250221181559-fb0809660f91 // indirect
-	github.com/streamingfast/cli v0.0.4-0.20241119021815-815afa473375 // indirect
 	github.com/streamingfast/dbin v0.9.1-0.20231117225723-59790c798e2c // indirect
 	github.com/streamingfast/derr v0.0.0-20250321151415-6b4fbbcb1bb5 // indirect
 	github.com/streamingfast/dgrpc v0.0.0-20250423172640-223250ed2391 // indirect
 	github.com/streamingfast/dmetrics v0.0.0-20240214191810-524a5c58fbaa // indirect
 	github.com/streamingfast/dstore v0.1.1-0.20250217165048-d508dcc6b33e // indirect
-	github.com/streamingfast/logging v0.0.0-20230608130331-f22c91403091 // indirect
 	github.com/streamingfast/opaque v0.0.0-20210811180740-0c01d37ea308 // indirect
 	github.com/streamingfast/pbgo v0.0.6-0.20240823134334-812f6a16c5cb // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
