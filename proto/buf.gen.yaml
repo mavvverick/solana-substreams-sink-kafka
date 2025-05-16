@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: github.com/streamingfast/substreams-sink-pubsub/pb
+    default: github.com/mavvverick/substreams-sink-kafka/pb
 plugins:
   - name: go
     out: ../pb
@@ -15,9 +15,3 @@ plugins:
     out: ../examples/simple/src/pb
     opt:
       - no_features
-
-
-  
-        
-      
-    

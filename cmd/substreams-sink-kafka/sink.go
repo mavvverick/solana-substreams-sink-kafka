@@ -69,6 +69,10 @@ func sinkRunE(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("creating kafka client: %w", err)
 	}
 
+	if err := client.Ping(ctx); err != nil {
+		return fmt.Errorf("kafka connection unstable: ping failed on attempt %w", err)
+	}
+
 	// FIXME: This is now duplicated across sinkers. It should have
 	// definitely be added in sink.NewFromViper directly so that it's shared across all sinkers.
 	if endpoint == "" {
