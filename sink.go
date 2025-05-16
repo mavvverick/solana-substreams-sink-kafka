@@ -69,7 +69,9 @@ func (s *Sink) handleBlockScopedData(ctx context.Context, data *pbsubstreamsrpc.
 	}
 
 	blockNum := data.Clock.Number
-	messages := generateBlockScopedMessages(publish, cursor, blockNum)
+	messages := generateBlockScopedMessages(publish, cursor, blockNum, s.topic, s.logger)
+
+	// s.logger.Info("publishing messages", zap.Any("messages:::", messages))
 
 	err = s.publishMessages(ctx, messages)
 	if err != nil {
@@ -84,13 +86,20 @@ func (s *Sink) handleBlockScopedData(ctx context.Context, data *pbsubstreamsrpc.
 	return nil
 }
 
-func generateBlockScopedMessages(publish *pbkafka.Publish, cursor *sink.Cursor, blockNum uint64) []*kgo.Record {
+func generateBlockScopedMessages(publish *pbkafka.Publish, cursor *sink.Cursor, blockNum uint64, defaultTopic string, logger *zap.Logger) []*kgo.Record {
 	var messages []*kgo.Record
 
 	var indexCounter int
 	for _, message := range publish.Messages {
 		var headers []kgo.RecordHeader
+		topic := defaultTopic
 		for _, attribute := range message.Attributes {
+			if attribute.Key == "k_topic" {
+				if attribute.Value != "" {
+					topic = attribute.Value
+				}
+				continue
+			}
 			headers = append(headers, kgo.RecordHeader{
 				Key:   attribute.Key,
 				Value: []byte(attribute.Value),
@@ -104,7 +113,7 @@ func generateBlockScopedMessages(publish *pbkafka.Publish, cursor *sink.Cursor, 
 
 		orderingKey := fmt.Sprintf("%09d_%05d", blockNum, indexCounter)
 		msg := &kgo.Record{
-			Topic:   "", // Topic is set in publishRecords
+			Topic:   topic,
 			Value:   message.Data,
 			Headers: headers,
 			Key:     []byte(orderingKey),
@@ -177,10 +186,6 @@ func (s *Sink) saveCursor(c *sink.Cursor) error {
 }
 
 func (s *Sink) publishMessages(ctx context.Context, records []*kgo.Record) error {
-	for _, record := range records {
-		record.Topic = s.topic
-	}
-
 	results := s.client.ProduceSync(ctx, records...)
 	for _, result := range results {
 		if result.Err != nil {
@@ -199,7 +204,7 @@ func generateUndoBlockMessages(lastValidBlockNum uint64, cursor *sink.Cursor) []
 	}
 
 	record := &kgo.Record{
-		Topic:   "", // Topic is set in publishRecords
+		Topic:   "", // Topic is set in publishMessages
 		Value:   nil,
 		Headers: headers,
 	}
